@@ -4,7 +4,7 @@ namespace Mohaymen_Cmd.Model
 {
     internal class User
     {
-        public required int ID { get; set; }
+        public int ID { get; set; }
         [MaxLength(63)]
         public required string UserName { get; set; }
         [MaxLength(63)]

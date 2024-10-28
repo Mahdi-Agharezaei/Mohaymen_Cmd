@@ -11,33 +11,86 @@ namespace Mohaymen_Cmd.Controller
             dbcontext = context;
         }
 
-        public void ProcessCommand(string[] commandParts)
+        public static Dictionary<string, int> Instructions_PartCounts = new Dictionary<string, int>()
         {
-            string command = commandParts[0].ToLower();
-            switch (command)
+            { "register", 5},
+            { "login", 5},
+            { "change", 3},
+            { "search", 3},
+            { "changepassword", 5},
+            { "logout", 1},
+            { "clear", 1},
+            { "exit", 1}
+        };
+
+        static List<string> Keys = new List<string>
+        {
+            "--username",
+            "--password",
+            "--status",
+            "--old",
+            "--new"
+        };
+
+        public void ProcessCommand(string Instruction, string[] CommandParts)
+        {
+            UserServices userServices = new UserServices(dbcontext);
+
+            string Username = GetParameterValue(CommandParts, "--username");
+            string Password = GetParameterValue(CommandParts, "--password");
+            string Status = GetParameterValue(CommandParts, "--status");
+            string OldPassword = GetParameterValue(CommandParts, "--old");
+            string NewPassword = GetParameterValue(CommandParts, "--new");
+
+            switch (Instruction)
             {
-                case "hello":
-                    Console.WriteLine("Hello there!");
+                case "register":
+                    userServices.Register(Username, Password);
                     break;
-                case "time":
-                    Console.WriteLine(DateTime.Now.ToString("HH:mm:ss"));
+
+                case "login":
+                    userServices.Login(Username, Password);
                     break;
+
+                case "change":
+                    userServices.Change(Status);
+                    break;
+
                 case "search":
-                    if (commandParts.Length > 1)
-                    {
-                        string searchTerm = string.Join(" ", commandParts, 1, commandParts.Length - 1);
-                        Console.WriteLine($"You searched for: {searchTerm}");
-                    }
-                    else
-                    {
-                        Console.WriteLine("Usage: search [term]");
-                    }
+                    userServices.Search(Username);
                     break;
+
+                case "changepassword":
+                    userServices.ChangePassword(OldPassword, NewPassword);
+                    break;
+
+                case "logout":
+                    userServices.Logout();
+                    break;
+
+                case "clear":
+                    userServices.Clear();
+                    break;
+
                 default:
-                    Console.WriteLine("Unknown command.");
                     break;
             }
         }
 
+        private string GetParameterValue(string[] CommandParts, string ParameterName)
+        {
+            int i = 0;
+            foreach (string CP in CommandParts)
+            {
+                if (CP.ToLower() == ParameterName.ToLower() && i + 1 < CommandParts.Length)
+                {
+                    return CommandParts[i + 1];
+                }
+
+                i++;
+            }
+
+            return null;
+        }
     }
 }

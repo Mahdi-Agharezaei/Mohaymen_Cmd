@@ -1,61 +1,42 @@
-﻿namespace Mohaymen_Cmd
+﻿using Mohaymen_Cmd.Controller;
+using Mohaymen_Cmd.Model;
+
+namespace Mohaymen_Cmd
 {
     internal class Program
     {
         static void Main(string[] args)
         {
-            List<string> input = new List<string>();
-            bool IsLogin = false;
-            List<int> PartCounts = new List<int> { 1, 3, 5 };
+            Console.WriteLine("Welcome to Mohaymen Cmd App :)");
 
             do
             {
                 Console.Write("Enter instruction:>");
-                input = Console.ReadLine().Trim().Split().ToList();
+                string[] input = Console.ReadLine().Trim().Split();
 
-                bool IsAnomaly = false;
-                if (!PartCounts.Contains(input.Count)) { IsAnomaly = true; }
-
-                if (!string.IsNullOrEmpty(input.First()))
+                if (input.Length != 0 && !string.IsNullOrEmpty(input[0]))
                 {
-                    string CurrentInstruction = string.Empty;
-
-                    var MaybeInstruction = Instructions.Where(x => x == input.First().ToLower());
-                    if (MaybeInstruction.Any())
+                    string? Instruction = CommandProcessor.Instructions_PartCounts.Select(x => x.Key).Where(x => x == input[0].ToLower()).FirstOrDefault();
+                    if (Instruction is not null)
                     {
-                        CurrentInstruction = MaybeInstruction.First();
-
-                        //ToDo
-
-                        if (CurrentInstruction == "register" && input.Count == 5)
+                        if (CommandProcessor.Instructions_PartCounts.First(x => x.Key == Instruction).Value == input.Length)
                         {
-
+                            if (Instruction == "exit")
+                            {
+                                break;
+                            }
+                            else
+                            {
+                                using (var context = new ApplicationDbContext())
+                                {
+                                    ICommandProcessor commandProcessor = new CommandProcessor(context);
+                                    commandProcessor.ProcessCommand(Instruction, input[1..]);
+                                }
+                            }
                         }
-
-                        if (CurrentInstruction == "login" && input.Count == 5)
+                        else
                         {
-
-                        }
-
-                        if (CurrentInstruction == "change" && input.Count == 3)
-                        {
-
-                        }
-
-                        if (CurrentInstruction == "search" && input.Count == 3)
-                        {
-
-                        }
-
-                        if (CurrentInstruction == "changepassword" && input.Count == 5)
-                        {
-
-                        }
-
-                        if (CurrentInstruction == "logout" && input.Count == 1)
-                        {
-                            IsLogin = false;
-                            Console.WriteLine("You are logged out!");
+                            Console.WriteLine("Wrong Part Count!");
                             continue;
                         }
                     }
@@ -66,28 +47,9 @@
                     }
                 }
             }
-            while (input.First().ToLower() != "exit"); ///Feature: || input.ToLower() == "clear"
+            while (true);
 
             Environment.Exit(0);
         }
-
-        static List<string> Instructions = new List<string>
-        {
-            "register",
-            "login",
-            "change",
-            "search",
-            "changepassword",
-            "logout"
-        };
-
-        static List<string> Keys = new List<string>
-        {
-            "--username",
-            "--password",
-            "--status",
-            "--old",
-            "--new"
-        };
     }
 }

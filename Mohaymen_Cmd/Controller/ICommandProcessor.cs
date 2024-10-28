@@ -2,6 +2,6 @@
 {
     internal interface ICommandProcessor
     {
-        void ProcessCommand(string[] CommandParts);
+        void ProcessCommand(string Instruction, string[] CommandParts);
     }
 }
