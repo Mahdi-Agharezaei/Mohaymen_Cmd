@@ -20,7 +20,8 @@ namespace Mohaymen_Cmd.Controller
             { "changepassword", 5},
             { "logout", 1},
             { "clear", 1},
-            { "exit", 1}
+            { "exit", 1},
+            { "Delete", 5 }
         };
 
         static List<string> Keys = new List<string>
@@ -72,6 +73,9 @@ namespace Mohaymen_Cmd.Controller
                     userServices.Clear();
                     break;
 
+                case "Delete":
+                    userServices.DeleteUser(Username, Password);
+                    break;
                 default:
                     break;
             }

@@ -179,5 +179,28 @@ namespace Mohaymen_Cmd.Controller
             Console.Clear();
             Console.WriteLine("Welcome to Mohaymen Cmd App :)");
         }
+
+        public void DeleteUser(string username, string password)
+        {
+            try
+            {
+                var user = dbcontext.Users.SingleOrDefault(u => u.UserName == username && u.Password == password);
+                if (user is not null)
+                {
+                    dbcontext.Users.Remove(user);
+                    dbcontext.SaveChanges();
+                    Console.WriteLine("User is deleted :)");
+                }
+                else
+                {
+                    Logout();
+                    Console.WriteLine("Username or password is incorrect!");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
     }
 }
